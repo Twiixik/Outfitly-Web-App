@@ -1,71 +1,112 @@
-import React, { useState } from "react";
-import { ref, update } from "firebase/database";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { ref, get, update } from "firebase/database";
 import { db } from "../firebaseConfig";
+import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 
-const EditProfile = ({ uid, profile, onUpdateProfile }) => {
-  const [name, setName] = useState(profile?.name || "");
-  const [profilePicture, setProfilePicture] = useState(profile?.profilePicture || "");
-  const [showModal, setShowModal] = useState(false);
+const EditItem = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { category, itemId, uid } = location.state || {};
 
-  const handleSaveChanges = async (e) => {
+  const [itemName, setItemName] = useState("");
+  const [itemTags, setItemTags] = useState("");
+  const [itemImage, setItemImage] = useState("");
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchItemDetails = async () => {
+      try {
+        const itemRef = ref(db, `wardrobes/${uid}/${category}/${itemId}`);
+        const snapshot = await get(itemRef);
+        if (snapshot.exists()) {
+          const item = snapshot.val();
+          setItemName(item.name || "");
+          setItemTags(item.tags ? item.tags.join(", ") : "");
+          setItemImage(item.image || "");
+        } else {
+          setError("Item not found.");
+        }
+      } catch (err) {
+        console.error("Error fetching item:", err.message);
+        setError("Failed to fetch item details.");
+      }
+    };
+
+    if (uid && category && itemId) fetchItemDetails();
+  }, [uid, category, itemId]);
+
+  const handleUpdateItem = async (e) => {
     e.preventDefault();
+
+    if (!itemName.trim()) {
+      setError("Item name is required!");
+      return;
+    }
+
     try {
-      // Update profile in the database
-      const userRef = ref(db, `users/${uid}`);
-      await update(userRef, { name, profilePicture });
-
-      // Update profile in state
-      onUpdateProfile({ name, profilePicture });
-
-      // Show modal and close after a delay
-      setShowModal(true);
-      setTimeout(() => {
-        setShowModal(false);
-        navigate("/profile");
-      }, 2000);
+      const itemRef = ref(db, `wardrobes/${uid}/${category}/${itemId}`);
+      await update(itemRef, {
+        name: itemName,
+        tags: itemTags.split(",").map((tag) => tag.trim()),
+        image: itemImage || "https://via.placeholder.com/150",
+      });
+      navigate("/wardrobe");
     } catch (err) {
-      console.error("Error saving profile:", err.message);
+      console.error("Error updating item:", err.message);
+      setError("Failed to update item. Please try again.");
     }
   };
 
   return (
     <div className="form-page">
-      <Logo />
-      <h1>Edit Profile</h1>
-      <form onSubmit={handleSaveChanges}>
-        <label>Name</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter your name"
-        />
-        <label>Profile Picture URL</label>
-        <input
-          type="text"
-          value={profilePicture}
-          onChange={(e) => setProfilePicture(e.target.value)}
-          placeholder="Enter image URL"
-        />
-        <button type="submit" className="save-outfit-button">
-          Save Changes
-        </button>
-      </form>
+      <Logo /> {/* Add reusable Logo component */}
+      <h1>Edit Item</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleUpdateItem}>
+        <label>
+          Edit URL Image
+          <input
+            type="text"
+            value={itemImage}
+            onChange={(e) => setItemImage(e.target.value)}
+            placeholder="Image URL"
+          />
+        </label>
 
-      {/* Modal Popup */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Changes Saved!</h2>
-            <p>Your profile has been successfully updated.</p>
-          </div>
+        {/* Image Preview */}
+        <div className="image-preview">
+          {itemImage ? (
+            <img src={itemImage} alt="Preview" />
+          ) : (
+            <span>Image preview</span>
+          )}
         </div>
-      )}
+
+        <label>
+          Edit Name
+          <input
+            type="text"
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            placeholder="Item Name"
+          />
+        </label>
+
+        <label>
+          Edit Tags
+          <input
+            type="text"
+            value={itemTags}
+            onChange={(e) => setItemTags(e.target.value)}
+            placeholder="Tags (comma-separated)"
+          />
+        </label>
+
+        <button type="submit">Update Item</button>
+      </form>
     </div>
   );
 };
 
-export default EditProfile;
+export default EditItem;
