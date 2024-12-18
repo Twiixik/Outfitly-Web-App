@@ -1,13 +1,14 @@
-import { StrictMode } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import "./index.css";
 import App from "./App.jsx";
+import "./index.css";
 
+// Set the basename for GitHub Pages
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter basename={import.meta.env.DEV ? "/" : "/Outfitly-Web-App/"}>
+  <React.StrictMode>
+    <BrowserRouter basename="/Outfitly-Web-App/">
       <App />
     </BrowserRouter>
-  </StrictMode>
+  </React.StrictMode>
 );
