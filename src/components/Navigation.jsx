@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import HomeIcon from "../assets/icons/home.svg";
+import HomeIcon from "/src/assets/icons/home.svg";
 import WardrobeIcon from "../assets/icons/wardrobe.svg";
 import HangerIcon from "../assets/icons/hanger.svg";
 import SustainabilityIcon from "../assets/icons/sustainability.svg";
