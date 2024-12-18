@@ -1,10 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import HomeIcon from "/src/assets/icons/home.svg";
-import WardrobeIcon from "../assets/icons/wardrobe.svg";
-import HangerIcon from "../assets/icons/hanger.svg";
-import SustainabilityIcon from "../assets/icons/sustainability.svg";
-import ProfileIcon from "../assets/icons/profile.svg";
+import HomeIcon from "../assets/Icons/home.svg";
+import WardrobeIcon from "../assets/Icons/wardrobe.svg";
+import HangerIcon from "../assets/Icons/hanger.svg";
+import SustainabilityIcon from "../assets/Icons/sustainability.svg";
+import ProfileIcon from "../assets/Icons/profile.svg";
 
 const Navigation = () => {
   return (
