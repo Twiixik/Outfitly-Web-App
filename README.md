@@ -55,17 +55,16 @@ Ensure you have the following installed on your system:
 
 ### 2. **Clone the Repository**
 
-```bash
 git clone https://github.com/Twiixik/Outfitly-Web-App.git
 cd Outfitly-Web-App
 
-### 3. Install Dependencies
+### 3. **Install Dependencies**
 Run the following command to install all required packages:
 
 bash
 npm install
 
-### 4. Set Up Firebase
+### 4. **Set Up Firebase**
 Go to Firebase Console.
 Create a new project and enable the Realtime Database and Authentication services.
 Replace the Firebase configuration in firebaseConfig.js with your own project credentials.
@@ -82,18 +81,18 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID",
 };
 
-### 5. Run the App
+### 5. **Run the App**
 Start the development server using:
 
 npm run dev
 The app will open in your browser at http://localhost:5173.
 
-🌍 Sustainability and Accessibility
+🌍 **Sustainability and Accessibility**
 Sustainability: Promotes wardrobe management to avoid overconsumption.
 Ethical Design: The app is inclusive, catering to different user needs.
 Accessibility: ARIA labels and semantic HTML ensure a smooth experience for users with assistive technologies.
 
-🤝 Contributing
+🤝 **Contributing**
 We welcome contributions! To contribute:
 
 Fork the repository.
@@ -102,20 +101,20 @@ Commit your changes: git commit -m "Add feature description".
 Push to the branch: git push origin feature/YourFeatureName.
 Open a pull request.
 
-📄 License
+📄 **License**
 This project is licensed under the MIT License.
 
-💻 Contact
+💻 **Contact**
 For any questions, reach out to:
 
 Name: Timotej Piontek
 Email: timotejpiontek5@gmail.com
 
-🎥 Project Presentation
+🎥 **Project Presentation**
 📹 Check out the video presentation here:
 🔗 
 
-⭐ Acknowledgments
+⭐ **Acknowledgments**
 Special thanks to my teacher and peers for their feedback and guidance throughout the development of this project.
 
 # React + Vite
