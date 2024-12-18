@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { auth } from "./firebaseConfig";
 import { signInAnonymously } from "firebase/auth";
 import { ref, get } from "firebase/database";
@@ -50,7 +50,6 @@ function App() {
     }
   };
 
-  // Guest access logic
   const handleGuestAccess = async () => {
     try {
       const userCredential = await signInAnonymously(auth);
@@ -81,84 +80,74 @@ function App() {
     setSavedOutfitsCount(0);
   };
 
-  // Update user profile after editing
   const handleUpdateProfile = (updatedProfile) => {
     setUserProfile((prev) => ({ ...prev, ...updatedProfile }));
   };
 
   return (
-    <Router>
-      <div className="app-container">
-        <div className="main-wrapper">
-          <Routes>
-            <Route path="/" element={<SignUp onGuestAccess={handleGuestAccess} onLogin={handleLogin} />} />
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route
-              path="/home"
-              element={isAuthenticated || isGuest ? <Home isGuest={isGuest} uid={uid} /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/profile"
-              element={
-                isAuthenticated || isGuest ? (
-                  <Profile
-                    uid={uid}
-                    profile={userProfile}
-                    points={userProfile?.points || 0}
-                    wardrobeCount={wardrobeCount}
-                    savedOutfitsCount={savedOutfitsCount}
-                    onLogout={handleLogout}
-                    isGuest={isGuest}
-                  />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
-            />
-            {/* Add Edit Profile Route */}
-            <Route
-              path="/edit-profile"
-              element={
-                isAuthenticated || isGuest ? (
-                  <EditProfile
-                    uid={uid}
-                    profile={userProfile}
-                    onUpdateProfile={handleUpdateProfile}
-                  />
-                ) : (
-                  <Navigate to="/" />
-                )
-              }
-            />
-            <Route
-              path="/wardrobe"
-              element={
-                isAuthenticated || isGuest ? <Wardrobe isGuest={isGuest} uid={uid} /> : <Navigate to="/" />
-              }
-            />
-            <Route path="/add-item" element={isAuthenticated && uid ? <AddItem uid={uid} /> : <Navigate to="/" />} />
-            <Route path="/edit-item" element={isAuthenticated && uid ? <EditItem uid={uid} /> : <Navigate to="/" />} />
-            <Route
-              path="/outfit-planner"
-              element={isAuthenticated || isGuest ? <OutfitPlanner uid={uid} /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/saved-outfits"
-              element={isAuthenticated || isGuest ? <SavedOutfits uid={uid} /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/edit-outfit"
-              element={isAuthenticated || isGuest ? <EditOutfit uid={uid} /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/sustainability-tips"
-              element={isAuthenticated || isGuest ? <SustainabilityTips /> : <Navigate to="/" />}
-            />
-          </Routes>
-        </div>
-        {(isAuthenticated || isGuest) && <Navigation />}
+    <div className="app-container">
+      <div className="main-wrapper">
+        <Routes>
+          <Route path="/" element={<SignUp onGuestAccess={handleGuestAccess} onLogin={handleLogin} />} />
+          <Route path="login" element={<Login onLogin={handleLogin} />} />
+          <Route
+            path="home"
+            element={isAuthenticated || isGuest ? <Home isGuest={isGuest} uid={uid} /> : <Navigate to="/" />}
+          />
+          <Route
+            path="profile"
+            element={
+              isAuthenticated || isGuest ? (
+                <Profile
+                  uid={uid}
+                  profile={userProfile}
+                  points={userProfile?.points || 0}
+                  wardrobeCount={wardrobeCount}
+                  savedOutfitsCount={savedOutfitsCount}
+                  onLogout={handleLogout}
+                  isGuest={isGuest}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="edit-profile"
+            element={
+              isAuthenticated || isGuest ? (
+                <EditProfile uid={uid} profile={userProfile} onUpdateProfile={handleUpdateProfile} />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="wardrobe"
+            element={isAuthenticated || isGuest ? <Wardrobe isGuest={isGuest} uid={uid} /> : <Navigate to="/" />}
+          />
+          <Route path="add-item" element={isAuthenticated && uid ? <AddItem uid={uid} /> : <Navigate to="/" />} />
+          <Route path="edit-item" element={isAuthenticated && uid ? <EditItem uid={uid} /> : <Navigate to="/" />} />
+          <Route
+            path="outfit-planner"
+            element={isAuthenticated || isGuest ? <OutfitPlanner uid={uid} /> : <Navigate to="/" />}
+          />
+          <Route
+            path="saved-outfits"
+            element={isAuthenticated || isGuest ? <SavedOutfits uid={uid} /> : <Navigate to="/" />}
+          />
+          <Route
+            path="edit-outfit"
+            element={isAuthenticated || isGuest ? <EditOutfit uid={uid} /> : <Navigate to="/" />}
+          />
+          <Route
+            path="sustainability-tips"
+            element={isAuthenticated || isGuest ? <SustainabilityTips /> : <Navigate to="/" />}
+          />
+        </Routes>
       </div>
-    </Router>
+      {(isAuthenticated || isGuest) && <Navigation />}
+    </div>
   );
 }
 
