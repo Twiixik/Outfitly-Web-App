@@ -1,109 +1,92 @@
-import React, { useState, useEffect } from "react";
-import { ref, get, update } from "firebase/database";
-import { db } from "../firebaseConfig";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Logo from "../components/Logo";
+import { ref, update, remove } from "firebase/database";
+import { db } from "../firebaseConfig";
+import Logo from "../components/Logo"; 
 
 const EditItem = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { category, itemId, uid } = location.state || {};
+  const { item, category } = location.state;
 
-  const [itemName, setItemName] = useState("");
-  const [itemTags, setItemTags] = useState("");
-  const [itemImage, setItemImage] = useState("");
-  const [error, setError] = useState(null);
+  const [name, setName] = useState(item.name);
+  const [tags, setTags] = useState(item.tags ? item.tags.join(", ") : "");
+  const [image, setImage] = useState(item.image);
 
-  useEffect(() => {
-    const fetchItemDetails = async () => {
-      try {
-        const itemRef = ref(db, `wardrobes/${uid}/${category}/${itemId}`);
-        const snapshot = await get(itemRef);
-        if (snapshot.exists()) {
-          const item = snapshot.val();
-          setItemName(item.name || "");
-          setItemTags(item.tags ? item.tags.join(", ") : "");
-          setItemImage(item.image || "");
-        } else {
-          setError("Item not found.");
-        }
-      } catch (err) {
-        console.error("Error fetching item:", err.message);
-        setError("Failed to fetch item details.");
-      }
-    };
-
-    if (uid && category && itemId) fetchItemDetails();
-  }, [uid, category, itemId]);
-
-  const handleUpdateItem = async (e) => {
-    e.preventDefault();
-
-    if (!itemName.trim()) {
-      setError("Item name is required!");
-      return;
-    }
-
+  const handleSave = async () => {
     try {
-      const itemRef = ref(db, `wardrobes/${uid}/${category}/${itemId}`);
+      const itemRef = ref(db, `wardrobes/${item.uid}/${category}/${item.id}`);
+      console.log("Saving to path:", `wardrobes/${item.uid}/${category}/${item.id}`);
       await update(itemRef, {
-        name: itemName,
-        tags: itemTags.split(",").map((tag) => tag.trim()),
-        image: itemImage || "https://via.placeholder.com/150",
+        name,
+        tags: tags.split(",").map((tag) => tag.trim()),
+        image,
       });
       navigate("/wardrobe");
-    } catch (err) {
-      console.error("Error updating item:", err.message);
-      setError("Failed to update item. Please try again.");
+    } catch (error) {
+      console.error("Error updating item:", error.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const itemRef = ref(db, `wardrobes/${item.uid}/${category}/${item.id}`);
+      console.log("Deleting from path:", `wardrobes/${item.uid}/${category}/${item.id}`);
+      await remove(itemRef);
+      navigate("/wardrobe");
+    } catch (error) {
+      console.error("Error deleting item:", error.message);
     }
   };
 
   return (
     <div className="form-page">
-      <Logo /> {/* Add reusable Logo component */}
+      <Logo /> {/* Add the Logo component here */}
       <h1>Edit Item</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleUpdateItem}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <label>
-          Edit URL Image
+          Name
           <input
             type="text"
-            value={itemImage}
-            onChange={(e) => setItemImage(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+          />
+        </label>
+
+        <label>
+          Tags (comma-separated)
+          <input
+            type="text"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="Add tags"
+          />
+        </label>
+
+        <label>
+          Image URL
+          <input
+            type="text"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
             placeholder="Image URL"
           />
         </label>
 
         {/* Image Preview */}
         <div className="image-preview">
-          {itemImage ? (
-            <img src={itemImage} alt="Preview" />
-          ) : (
-            <span>Image preview</span>
-          )}
+          {image ? <img src={image} alt="Preview" /> : <span>Image preview</span>}
         </div>
 
-        <label>
-          Edit Name
-          <input
-            type="text"
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-            placeholder="Item Name"
-          />
-        </label>
-
-        <label>
-          Edit Tags
-          <input
-            type="text"
-            value={itemTags}
-            onChange={(e) => setItemTags(e.target.value)}
-            placeholder="Tags (comma-separated)"
-          />
-        </label>
-
-        <button type="submit">Update Item</button>
+        <div className="form-buttons">
+          <button type="button" onClick={handleSave}>
+            Save Changes
+          </button>
+          <button type="button" className="delete-button" onClick={handleDelete}>
+            Delete Item
+          </button>
+        </div>
       </form>
     </div>
   );

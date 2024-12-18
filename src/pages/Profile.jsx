@@ -14,10 +14,14 @@ const Profile = ({ profile, wardrobeCount, savedOutfitsCount, points, onLogout, 
       <div className="profile-card">
         <div className="profile-avatar">
           <img
-            src={profile?.profilePicture || "https://via.placeholder.com/100"}
-            alt="Profile"
-            className="profile-image"
-          />
+  src={
+    profile?.profilePicture?.trim() // Check profilePicture first
+      ? profile.profilePicture
+      : profile?.image || "https://via.placeholder.com/100" // Use image as fallback
+  }
+  alt="Profile"
+  className="profile-image"
+/>
         </div>
         <div className="profile-info" style={{ backgroundColor: "transparent" }}>
           <h3 className="profile-name" style={{ backgroundColor: "transparent" }}>
@@ -46,15 +50,23 @@ const Profile = ({ profile, wardrobeCount, savedOutfitsCount, points, onLogout, 
 
       {/* Buttons Section */}
       <div className="profile-buttons">
-        {/* Render "Edit Profile" ONLY if not a guest */}
-        {!isGuest && (
+        {!isGuest ? (
           <button
             className="save-outfit-button"
             onClick={() => navigate("/edit-profile")}
           >
             Edit Profile
           </button>
+        ) : (
+          <button
+            className="save-outfit-button"
+            disabled
+            style={{ opacity: 0.5, cursor: "not-allowed" }}
+          >
+            Edit Profile (Unavailable for Guests)
+          </button>
         )}
+
         <button
           className="save-outfit-button"
           onClick={() => navigate("/sustainability-tips")}
